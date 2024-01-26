@@ -8,60 +8,108 @@
 
 <body>
     <canvas id="canvas" height="600" width="600"></canvas>
-    <div id="ui">
-        <p id="playersRemaining"></p>
-        <p id="playAreaSize"></p>
-    </div>
 
     <script>
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
-        var x = canvas.width / 2;
-        var y = canvas.height - 30;
-        var dx = 0;
-        var dy = 0;
+
         var ballRadius = 10;
         var ballMass = 1;
         var maxBallRadius = ballRadius * 3;
-        var gravity = 0.1;
-        var bouncieness = 0.8;
-        var speed = 2;
 
-        var playersRemaining = 100; // Update this with your game logic
-        var playAreaSize = 100; // Update this with your game logic
+        var x = canvas.width / 2;
+        var y = 0 + ballRadius;
+
+        var vx = 0;
+        var vy = 0;
+
+        var maxvx = 10;
+        var maxvy = 10;
+
+        var gravity = 0.1;
+        var elasticity = 0.8; // how bouncy the ball is
+        var friction = 0.995;
+        var speed = 2;
+        var onground = true;
+
+        var keyDelay = 100; // ms inbetween key handler calls
+
+        var xaccel = 0.8;
+        var yaccel = 3;
+
+        var key = {
+            right: false,
+            left: false,
+            up: false,
+            down: false
+        };
 
         function drawBall() {
             ctx.beginPath();
-            ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+            ctx.arc(x, canvas.height - y, ballRadius, 0, Math.PI * 2);
+
             ctx.fillStyle = "#0095DD";
+
             ctx.fill();
             ctx.closePath();
         }
 
+        var keyHandler = setInterval(keyHandle, keyDelay);
+
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawBall();
 
-            if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-                dx = -dx * bouncieness;
+            if (x + vx > canvas.width - ballRadius || x + vx < ballRadius) {
+                vx = -vx * elasticity;
             }
-            if (y + dy > canvas.height - ballRadius) {
-                dy = -dy * bouncieness;
+
+            if (y + vy > 0 + ballRadius) {
+                vy -= gravity;
+                onground = false;
             } else {
-                dy += gravity;
+                vy = -vy * elasticity;
+                onground = true;
             }
 
-            x += dx;
-            y += dy;
+            if (onground) {
+                vx *= friction;
+            }
+
+            x += vx;
+            y += vy;
 
             // Reduce the size of the ball over time
             if (ballRadius > 10) {
                 ballRadius -= 0.1;
             }
 
-            // Update UI
-            document.getElementById('playersRemaining').innerText = "Players Remaining: " + playersRemaining;
-            document.getElementById('playAreaSize').innerText = "Play Area Size: " + playAreaSize + "%";
+            drawBall();
+        }
+
+        function keyHandle() {
+            if (key.right) {
+                if (vx < maxvx) {
+                    vx += xaccel;
+                }
+            }
+            if (key.left) {
+                if (vx > -maxvx) {
+                    vx -= xaccel;
+                }
+            }
+            if (key.up) {
+                if (onground)
+                    vy += yaccel;
+            }
+            if (key.down) {
+                if (vy < maxvy) {
+                    vy -= 5;
+                }
+            }
+
+            console.log("vx: " + vx + " vy: " + vy + " x: " + x + " y: " + y + " onground: " + onground);
+
+            setInterval(keyHandler, keyDelay);
         }
 
         function increaseMass() {
@@ -76,16 +124,31 @@
                 increaseMass();
             }
             if (event.key === "ArrowRight") {
-                dx = speed;
+                key.right = true;
             }
             if (event.key === "ArrowLeft") {
-                dx = -speed;
+                key.left = true;
             }
-            if (event.key === "ArrowUp" && y + ballRadius >= canvas.height) {
-                dy = -speed;
+            if (event.key === "ArrowUp") {
+                key.up = true;
             }
             if (event.key === "ArrowDown") {
-                dy = speed;
+                key.down = true;
+            }
+        });
+
+        document.addEventListener("keyup", function (event) {
+            if (event.key === "ArrowRight") {
+                key.right = false;
+            }
+            if (event.key === "ArrowLeft") {
+                key.left = false;
+            }
+            if (event.key === "ArrowUp") {
+                key.up = false;
+            }
+            if (event.key === "ArrowDown") {
+                key.down = false;
             }
         });
 
