@@ -21,6 +21,8 @@
         var ballMass = 1;
         var maxBallRadius = ballRadius * 3;
         var gravity = 0.1;
+        var friction = 0.8;
+        var speed = 2;
 
         function drawBall() {
             ctx.beginPath();
@@ -35,10 +37,10 @@
             drawBall();
 
             if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-                dx = -dx;
+                dx = 0;
             }
-            if (y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
-                dy = -dy;
+            if (y + dy > canvas.height - ballRadius) {
+                dy = 0;
             } else {
                 dy += gravity;
             }
@@ -62,6 +64,18 @@
         document.addEventListener("keydown", function(event) {
             if (event.key === "x") {
                 increaseMass();
+            }
+            if (event.key === "ArrowRight") {
+                dx = speed;
+            }
+            if (event.key === "ArrowLeft") {
+                dx = -speed;
+            }
+            if (event.key === "ArrowUp") {
+                dy = -speed;
+            }
+            if (event.key === "ArrowDown") {
+                dy = speed;
             }
         });
 
