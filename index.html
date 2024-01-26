@@ -6,10 +6,21 @@
         canvas {
             border: 1px solid black;
         }
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            font-size: 20px;
+        }
     </style>
 </head>
 <body>
     <canvas id="canvas" width="500" height="500"></canvas>
+    <div id="ui">
+        <p id="playersRemaining"></p>
+        <p id="playAreaSize"></p>
+    </div>
     <script>
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
@@ -23,6 +34,9 @@
         var gravity = 0.1;
         var friction = 0.8;
         var speed = 2;
+
+        var playersRemaining = 100; // Update this with your game logic
+        var playAreaSize = 100; // Update this with your game logic
 
         function drawBall() {
             ctx.beginPath();
@@ -52,6 +66,10 @@
             if (ballRadius > 10) {
                 ballRadius -= 0.1;
             }
+
+            // Update UI
+            document.getElementById('playersRemaining').innerText = "Players Remaining: " + playersRemaining;
+            document.getElementById('playAreaSize').innerText = "Play Area Size: " + playAreaSize + "%";
         }
 
         function increaseMass() {
