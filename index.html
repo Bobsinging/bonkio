@@ -19,6 +19,7 @@
         var dy = -2;
         var ballRadius = 10;
         var ballMass = 1;
+        var maxBallRadius = ballRadius * 3;
 
         function drawBall() {
             ctx.beginPath();
@@ -41,11 +42,18 @@
 
             x += dx;
             y += dy;
+
+            // Reduce the size of the ball over time
+            if (ballRadius > 10) {
+                ballRadius -= 0.1;
+            }
         }
 
         function increaseMass() {
-            ballMass += 1;
-            ballRadius = 10 + ballMass;
+            if (ballRadius < maxBallRadius) {
+                ballMass += 1;
+                ballRadius = 10 + ballMass;
+            }
         }
 
         document.addEventListener("keydown", function(event) {
