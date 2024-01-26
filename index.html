@@ -7,7 +7,7 @@
 </head>
 
 <body>
-    <canvas id="canvas" height="600" width="600"></canvas>
+    <canvas id="canvas" height="500" width="500"></canvas>
 
     <script>
         var canvas = document.getElementById("canvas");
@@ -37,7 +37,10 @@
         var xaccel = 0.8;
         var yaccel = 3;
 
+        var rotation = 0;
+
         var key = {
+            x: false,
             right: false,
             left: false,
             up: false,
@@ -45,19 +48,21 @@
         };
 
         function drawBall() {
-            ctx.beginPath();
-            ctx.arc(x, canvas.height - y, ballRadius, 0, Math.PI * 2);
+            //ctx.beginPath();
+            //ctx.arc(x, canvas.height - y, ballRadius, 0, Math.PI * 2);
 
-            ctx.fillStyle = "#0095DD";
+            //ctx.fillStyle = "#0095DD";
 
-            ctx.fill();
-            ctx.closePath();
+            //ctx.fill();
+            //ctx.closePath();
+            var img = new Image();
+            img.src = "balls/ball1.png";
+            ctx.drawImage(img, x - ballRadius, canvas.height - y - ballRadius, ballRadius * 2, ballRadius * 2);
         }
 
-        var keyHandler = setInterval(keyHandle, keyDelay);
 
         function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // clear the canvas
 
             if (x + vx > canvas.width - ballRadius || x + vx < ballRadius) {
                 vx = -vx * elasticity;
@@ -81,12 +86,17 @@
             // Reduce the size of the ball over time
             if (ballRadius > 10) {
                 ballRadius -= 0.1;
+                ballMass -= 0.1;
+                y -= 0.1;
             }
 
             drawBall();
         }
 
         function keyHandle() {
+            if (key.x) {
+                increaseMass();
+            }
             if (key.right) {
                 if (vx < maxvx) {
                     vx += xaccel;
@@ -107,52 +117,55 @@
                 }
             }
 
-            console.log("vx: " + vx + " vy: " + vy + " x: " + x + " y: " + y + " onground: " + onground);
-
-            setInterval(keyHandler, keyDelay);
+            // console.log("vx: " + vx + " vy: " + vy + " x: " + x + " y: " + y + " onground: " + onground);
         }
 
         function increaseMass() {
             if (ballRadius < maxBallRadius) {
-                ballMass += 1;
+                ballMass += 2;
                 ballRadius = 10 + ballMass;
+                y += 2;
             }
         }
 
         document.addEventListener("keydown", function (event) {
-            if (event.key === "x") {
-                increaseMass();
-            }
-            if (event.key === "ArrowRight") {
+            if (event.key === "x")
+                key.x = true;
+
+            if (event.key === "ArrowRight")
                 key.right = true;
-            }
-            if (event.key === "ArrowLeft") {
+
+            if (event.key === "ArrowLeft")
                 key.left = true;
-            }
-            if (event.key === "ArrowUp") {
+
+            if (event.key === "ArrowUp")
                 key.up = true;
-            }
-            if (event.key === "ArrowDown") {
+
+            if (event.key === "ArrowDown")
                 key.down = true;
-            }
+
         });
 
         document.addEventListener("keyup", function (event) {
-            if (event.key === "ArrowRight") {
+            if (event.key === "x")
+                key.x = false;
+
+            if (event.key === "ArrowRight")
                 key.right = false;
-            }
-            if (event.key === "ArrowLeft") {
+
+            if (event.key === "ArrowLeft")
                 key.left = false;
-            }
-            if (event.key === "ArrowUp") {
+
+            if (event.key === "ArrowUp")
                 key.up = false;
-            }
-            if (event.key === "ArrowDown") {
+
+            if (event.key === "ArrowDown")
                 key.down = false;
-            }
+
         });
 
         setInterval(draw, 10);
+        setInterval(keyHandle, keyDelay);
     </script>
 </body>
 
