@@ -1,26 +1,18 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>JavaScript Game</title>
-    <style>
-        canvas {
-            border: 1px solid black;
-        }
-        #ui {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: white;
-            font-size: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <canvas id="canvas" width="500" height="500"></canvas>
+    <canvas id="canvas" height="600" width="600"></canvas>
     <div id="ui">
         <p id="playersRemaining"></p>
         <p id="playAreaSize"></p>
     </div>
+
     <script>
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
@@ -32,7 +24,7 @@
         var ballMass = 1;
         var maxBallRadius = ballRadius * 3;
         var gravity = 0.1;
-        var friction = 0.8;
+        var bouncieness = 0.8;
         var speed = 2;
 
         var playersRemaining = 100; // Update this with your game logic
@@ -51,10 +43,10 @@
             drawBall();
 
             if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-                dx = -dx * friction;
+                dx = -dx * bouncieness;
             }
             if (y + dy > canvas.height - ballRadius) {
-                dy = -dy * friction;
+                dy = -dy * bouncieness;
             } else {
                 dy += gravity;
             }
@@ -79,7 +71,7 @@
             }
         }
 
-        document.addEventListener("keydown", function(event) {
+        document.addEventListener("keydown", function (event) {
             if (event.key === "x") {
                 increaseMass();
             }
@@ -100,4 +92,5 @@
         setInterval(draw, 10);
     </script>
 </body>
+
 </html>
