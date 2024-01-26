@@ -71,7 +71,7 @@
             if (event.key === "ArrowLeft") {
                 dx = -speed;
             }
-            if (event.key === "ArrowUp") {
+            if (event.key === "ArrowUp" && y + ballRadius >= canvas.height) {
                 dy = -speed;
             }
             if (event.key === "ArrowDown") {
@@ -79,45 +79,7 @@
             }
         });
 
-        setInterval(draw, 10);function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBall();
-
-    if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-        dx = 0;
-    }
-    if (y + dy > canvas.height - ballRadius || y + dy < ballRadius) {
-        dy = 0;
-    } else {
-        dy += gravity;
-    }
-
-    x += dx;
-    y += dy;
-
-    // Reduce the size of the ball over time
-    if (ballRadius > 10) {
-        ballRadius -= 0.1;
-    }
-}
-document.addEventListener("keydown", function(event) {
-    if (event.key === "x") {
-        increaseMass();
-    }
-    if (event.key === "ArrowRight") {
-        dx = speed;
-    }
-    if (event.key === "ArrowLeft") {
-        dx = -speed;
-    }
-    if (event.key === "ArrowUp" && y + ballRadius >= canvas.height) {
-        dy = -speed;
-    }
-    if (event.key === "ArrowDown") {
-        dy = speed;
-    }
-});
-
+        setInterval(draw, 10);
     </script>
 </body>
 </html>
