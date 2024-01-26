@@ -51,10 +51,10 @@
             drawBall();
 
             if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
-                dx = 0;
+                dx = -dx * friction;
             }
             if (y + dy > canvas.height - ballRadius) {
-                dy = 0;
+                dy = -dy * friction;
             } else {
                 dy += gravity;
             }
