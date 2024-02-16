@@ -7,15 +7,25 @@
 </head>
 
 <body>
-    <canvas id="canvas" height="500" width="500"></canvas>
+    <canvas id="canvas"></canvas>
 
     <script>
+        const TO_RADIANS = Math.PI / 180;
+
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
 
-        var ballRadius = 10;
-        var ballMass = 1;
+        var scale = 10;
+
+        var resolution = 5000;
+
+        canvas.width = resolution;
+        canvas.height = resolution;
+
+        var ballRadius = 10 * scale;
+        var ballMass = 1 * scale;
         var maxBallRadius = ballRadius * 3;
+        var minBallRadius = ballRadius;
 
         var x = canvas.width / 2;
         var y = 0 + ballRadius;
@@ -23,21 +33,23 @@
         var vx = 0;
         var vy = 0;
 
-        var maxvx = 10;
-        var maxvy = 10;
+        var maxvx = 10 * scale;
+        var maxvy = 10 * scale;
 
-        var gravity = 0.1;
+        var gravity = 0.1 * scale;
         var elasticity = 0.8; // how bouncy the ball is
         var friction = 0.995;
-        var speed = 2;
+        var speed = 2 * scale;
         var onground = true;
 
         var keyDelay = 100; // ms inbetween key handler calls
 
-        var xaccel = 0.8;
-        var yaccel = 3;
+        var xaccel = 0.8 * scale;
+        var yaccel = 3 * scale;
 
-        var rotation = 0;
+        var ydaccel = 2 * scale;
+
+        var rotation = 45;
 
         var key = {
             x: false,
@@ -48,21 +60,40 @@
         };
 
         function drawBall() {
-            //ctx.beginPath();
-            //ctx.arc(x, canvas.height - y, ballRadius, 0, Math.PI * 2);
 
-            //ctx.fillStyle = "#0095DD";
-
-            //ctx.fill();
-            //ctx.closePath();
             var img = new Image();
-            img.src = "balls/ball1.png";
+            img.src = "balls/ball2.png";
+
             ctx.drawImage(img, x - ballRadius, canvas.height - y - ballRadius, ballRadius * 2, ballRadius * 2);
+            return;
+
+            // save the current co-ordinate system 
+            // before we screw with it
+            ctx.save();
+            // move to the middle of where we want to draw our image
+            ctx.translate(x, resolution - y);
+            // rotate around that point, converting our 
+            // angle from degrees to radians 
+            ctx.rotate(rotation * TO_RADIANS);
+            // draw it up and to the left by half the width
+            // and height of the image 
+            //ctx.drawImage(img, (img.width / 2), (img.height / 2), ballRadius * 2, ballRadius * 2);
+            ctx.drawImage(img, img.width / 2, img.height / 2, ballRadius * 2, ballRadius * 2);
+
+            // and restore the co-ords to how they were when we began
+            ctx.restore();
+
+            //ctx.drawImage(img, x - ballRadius, canvas.height - y - ballRadius, ballRadius * 2, ballRadius * 2);
         }
 
 
-        function draw() {
+        function loop() {
             ctx.clearRect(0, 0, canvas.width, canvas.height); // clear the canvas
+
+            if (y + vy > canvas.height - ballRadius) {
+                //Lose();
+                vy = -vy * elasticity;
+            }
 
             if (x + vx > canvas.width - ballRadius || x + vx < ballRadius) {
                 vx = -vx * elasticity;
@@ -74,6 +105,10 @@
             } else {
                 vy = -vy * elasticity;
                 onground = true;
+
+                if (key.up) {
+                    vy += yaccel;
+                }
             }
 
             if (onground) {
@@ -84,10 +119,10 @@
             y += vy;
 
             // Reduce the size of the ball over time
-            if (ballRadius > 10) {
-                ballRadius -= 0.1;
-                ballMass -= 0.1;
-                y -= 0.1;
+            if (ballRadius > minBallRadius) {
+                ballRadius -= minBallRadius / 100;
+                ballMass -= minBallRadius / 100;
+                y -= minBallRadius / 100;
             }
 
             drawBall();
@@ -113,7 +148,7 @@
             }
             if (key.down) {
                 if (vy < maxvy) {
-                    vy -= 5;
+                    vy -= ydaccel;
                 }
             }
 
@@ -122,10 +157,14 @@
 
         function increaseMass() {
             if (ballRadius < maxBallRadius) {
-                ballMass += 2;
-                ballRadius = 10 + ballMass;
-                y += 2;
+                ballMass += minBallRadius / 5;
+                ballRadius = minBallRadius + ballMass;
+                y += minBallRadius / 5;
             }
+        }
+
+        function Lose() {
+            location.reload();
         }
 
         document.addEventListener("keydown", function (event) {
@@ -164,7 +203,7 @@
 
         });
 
-        setInterval(draw, 10);
+        setInterval(loop, 10);
         setInterval(keyHandle, keyDelay);
     </script>
 </body>
